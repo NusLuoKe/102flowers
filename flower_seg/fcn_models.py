@@ -4,64 +4,68 @@
 # @File    : fcn_models.py
 # @Author  : NUS_LuoKe
 
-from keras.layers import *
-from keras.models import *
-from keras.optimizers import *
+from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, Conv2DTranspose
+from keras.models import Model
+from keras.optimizers import Adam
 
 
-def unet(pretrained_weights=None, input_size=(256, 256, 1)):
-    inputs = Input(input_size)
-    conv1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
-    conv1 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1)
-    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
-    conv2 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool1)
-    conv2 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv2)
-    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
-    conv3 = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool2)
-    conv3 = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv3)
-    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
-    conv4 = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool3)
-    conv4 = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv4)
-    drop4 = Dropout(0.5)(conv4)
-    pool4 = MaxPooling2D(pool_size=(2, 2))(drop4)
+def get_unet_128(input_shape=(128, 128, 1), num_classes=1, learn_rate=1e-4, loss_func='binary_crossentropy',
+                 metrics=["accuracy"]):
+    inputs = Input(shape=input_shape)
+    # 128
 
-    conv5 = Conv2D(1024, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool4)
-    conv5 = Conv2D(1024, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv5)
-    drop5 = Dropout(0.5)(conv5)
+    down1 = Conv2D(64, (3, 3), activation='relu', padding='same')(inputs)
+    down1 = Conv2D(64, (3, 3), activation='relu', padding='same')(down1)
+    down1_pool = MaxPooling2D((2, 2))(down1)
+    # 64
 
-    up6 = Conv2D(512, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
-        UpSampling2D(size=(2, 2))(drop5))
-    merge6 = merge([drop4, up6], mode='concat', concat_axis=3)
-    conv6 = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge6)
-    conv6 = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv6)
+    down2 = Conv2D(128, (3, 3), activation='relu', padding='same')(down1_pool)
+    down2 = Conv2D(128, (3, 3), activation='relu', padding='same')(down2)
+    down2_pool = MaxPooling2D((2, 2))(down2)
+    # 32
 
-    up7 = Conv2D(256, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
-        UpSampling2D(size=(2, 2))(conv6))
-    merge7 = merge([conv3, up7], mode='concat', concat_axis=3)
-    conv7 = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge7)
-    conv7 = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv7)
+    down3 = Conv2D(256, (3, 3), activation='relu', padding='same')(down2_pool)
+    down3 = Conv2D(256, (3, 3), activation='relu', padding='same')(down3)
+    down3_pool = MaxPooling2D((2, 2))(down3)
+    # 16
 
-    up8 = Conv2D(128, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
-        UpSampling2D(size=(2, 2))(conv7))
-    merge8 = merge([conv2, up8], mode='concat', concat_axis=3)
-    conv8 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge8)
-    conv8 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv8)
+    down4 = Conv2D(512, (3, 3), activation='relu', padding='same')(down3_pool)
+    down4 = Conv2D(512, (3, 3), activation='relu', padding='same')(down4)
+    down4_pool = MaxPooling2D((2, 2))(down4)
+    # 8
 
-    up9 = Conv2D(64, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
-        UpSampling2D(size=(2, 2))(conv8))
-    merge9 = merge([conv1, up9], mode='concat', concat_axis=3)
-    conv9 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge9)
-    conv9 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
-    conv9 = Conv2D(2, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
-    conv10 = Conv2D(1, 1, activation='sigmoid')(conv9)
+    center = Conv2D(1024, (3, 3), activation='relu', padding='same')(down4_pool)
+    center = Conv2D(1024, (3, 3), activation='relu', padding='same')(center)
+    # center
 
-    model = Model(input=inputs, output=conv10)
+    up4 = Conv2DTranspose(512, (2, 2), strides=(2, 2), padding='same')(center)
+    up4 = concatenate([down4, up4], axis=3)
+    up4 = Conv2D(512, (3, 3), activation='relu', padding='same')(up4)
+    up4 = Conv2D(512, (3, 3), activation='relu', padding='same')(up4)
+    # 16
 
-    model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
+    up3 = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(up4)
+    up3 = concatenate([down3, up3], axis=3)
+    up3 = Conv2D(256, (3, 3), activation='relu', padding='same')(up3)
+    up3 = Conv2D(256, (3, 3), activation='relu', padding='same')(up3)
+    # 32
 
-    # model.summary()
+    up2 = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(up3)
+    up2 = concatenate([down2, up2], axis=3)
+    up2 = Conv2D(128, (3, 3), activation='relu', padding='same')(up2)
+    up2 = Conv2D(128, (3, 3), activation='relu', padding='same')(up2)
+    # 64
 
-    if (pretrained_weights):
-        model.load_weights(pretrained_weights)
+    up1 = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(up2)
+    up1 = concatenate([down1, up1], axis=3)
+    up1 = Conv2D(64, (3, 3), activation='relu', padding='same')(up1)
+    up1 = Conv2D(64, (3, 3), activation='relu', padding='same')(up1)
+    # 128
+
+    classify = Conv2D(num_classes, (1, 1), activation='sigmoid')(up1)
+
+    model = Model(inputs=inputs, outputs=classify)
+
+    model.compile(optimizer=Adam(lr=learn_rate), loss=loss_func, metrics=metrics)
 
     return model
