@@ -53,11 +53,11 @@ train_generator = zip(image_generator, mask_generator)
 start = time.time()
 h = model.fit_generator(train_generator, epochs=50, verbose=1)
 
-model_path = './models'
+model_dir = './models'
 model_name = 'model_1.h5'
-weights_path = os.path.join(model_path, model_name)
-if not os.path.isdir(model_path):
-    os.makedirs(model_path)
+weights_path = os.path.join(model_dir, model_name)
+if not os.path.isdir(model_dir):
+    os.makedirs(model_dir)
 
 model.save(weights_path)
 end = time.time()
