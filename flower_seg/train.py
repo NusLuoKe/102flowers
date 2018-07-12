@@ -4,22 +4,24 @@
 # @File    : train.py
 # @Author  : NUS_LuoKe
 
-from keras.preprocessing.image import ImageDataGenerator
-from flower_seg import fcn_models
 import os
-import time
-from flower_seg.visualization_util import plot_acc_loss
 import random
-import itertools
+import time
+
+from keras.preprocessing.image import ImageDataGenerator
+
+from flower_seg import fcn_models
+from flower_seg.visualization_util import plot_acc_loss
 
 # pre-settings
 # Define training directories (raw training images and their corresponding masks)
-train_image_dir = "../data_set/input/train_flower/"
-train_mask_dir = "../data_set/input/train_mask/"
+ROOT_DIR = os.path.abspath("../")
+train_image_dir = os.path.join(ROOT_DIR, "/data_set/input/train_flower/")
+train_mask_dir = os.path.join(ROOT_DIR, "/data_set/input/train_mask/")
 
 # Define testing directories (raw testing/validation images and their corresponding masks)
-test_image_dir = "../data_set/input/test_flower/"
-test_mask_dir = "../data_set/input/test_mask/"
+test_image_dir = os.path.join(ROOT_DIR, "/data_set/input/test_flower/")
+test_mask_dir = os.path.join(ROOT_DIR, "/data_set/input/test_mask/")
 
 target_size = (64, 64)
 batch_size = 32
