@@ -52,5 +52,5 @@ images into a particular size although we are using a FCN which can accept all s
 performance of my devices to do this project.  
 
 ![ori_image](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/resized_flower_00001.jpg)
-![ori_image](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/resized_mask_00001.jpg)
+![ori_image](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/resized_mask_00001.jpg)  
 The images and corresponding masks used to train the model are showing above. 
