@@ -15,13 +15,12 @@ from flower_seg.visualization_util import plot_acc_loss
 
 # pre-settings
 # Define training directories (raw training images and their corresponding masks)
-ROOT_DIR = os.path.abspath("../")
-train_image_dir = os.path.join(ROOT_DIR, "/data_set/input/train_flower/")
-train_mask_dir = os.path.join(ROOT_DIR, "/data_set/input/train_mask/")
+train_image_dir = "../data_set/input/train_flower/"
+train_mask_dir = "../data_set/input/train_mask/"
 
 # Define testing directories (raw testing/validation images and their corresponding masks)
-test_image_dir = os.path.join(ROOT_DIR, "/data_set/input/test_flower/")
-test_mask_dir = os.path.join(ROOT_DIR, "/data_set/input/test_mask/")
+test_image_dir = "../data_set/input/test_flower/"
+test_mask_dir = "../data_set/input/test_mask/"
 
 target_size = (64, 64)
 batch_size = 32
@@ -89,7 +88,6 @@ test_mask_generator = test_mask_datagen.flow_from_directory(
 test_generator = zip(test_image_generator, test_mask_generator)
 
 start = time.time()
-# TODO：genetator是空的
 h = model.fit_generator(generator=train_generator, steps_per_epoch=2000, epochs=50, validation_data=test_generator,
                         validation_steps=5, verbose=1)
 
