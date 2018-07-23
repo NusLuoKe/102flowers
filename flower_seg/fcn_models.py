@@ -9,7 +9,7 @@ from keras.models import Model
 from keras.optimizers import Adam
 
 
-def get_unet_128(input_shape=(128, 128, 1), num_classes=1, learn_rate=1e-4, loss_func='binary_crossentropy',
+def get_unet_128(input_shape=(128, 128, 1), num_classes=1, learning_rate=1e-4, loss_func='binary_crossentropy',
                  metrics=["accuracy"]):
     inputs = Input(shape=input_shape)
     # 128
@@ -66,6 +66,6 @@ def get_unet_128(input_shape=(128, 128, 1), num_classes=1, learn_rate=1e-4, loss
 
     model = Model(inputs=inputs, outputs=classify)
 
-    model.compile(optimizer=Adam(lr=learn_rate), loss=loss_func, metrics=metrics)
+    model.compile(optimizer=Adam(lr=learning_rate), loss=loss_func, metrics=metrics)
 
     return model

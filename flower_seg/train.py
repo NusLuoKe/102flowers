@@ -9,6 +9,7 @@ import random
 import time
 
 from keras.preprocessing.image import ImageDataGenerator
+from keras.models import load_model
 
 from flower_seg import fcn_models
 from flower_seg.visualization_util import plot_acc_loss
@@ -22,14 +23,24 @@ train_mask_dir = "../data_set/input/train_mask/"
 test_image_dir = "../data_set/input/test_flower/"
 test_mask_dir = "../data_set/input/test_mask/"
 
-target_size = (64, 64)
+input_shape = (256, 256, 1)
 batch_size = 32
-epochs = 50
+epochs = 100
+validation_steps = 5
+steps_per_epoch = 2000
+learning_rate = 1e-3
+cont_training = True
 
 # load model
-input_shape = (64, 64, 1)
-model = fcn_models.get_unet_128(input_shape=input_shape)
+if cont_training:
+    model_path = "../flower_1"
+    model = load_model(model_path)
+    print("load pre-trained model")
+else:
+    model = fcn_models.get_unet_128(input_shape=input_shape, learning_rate=learning_rate)
+    print("new model ready!")
 
+target_size = (input_shape[0], input_shape[1])
 # we create two instances with the same arguments
 train_data_gen_args = dict(rescale=1. / 255,
                            rotation_range=90.,
@@ -87,20 +98,25 @@ test_mask_generator = test_mask_datagen.flow_from_directory(
 # combine generators into one which yields image and masks
 test_generator = zip(test_image_generator, test_mask_generator)
 
-start = time.time()
-h = model.fit_generator(generator=train_generator, steps_per_epoch=2000, epochs=50, validation_data=test_generator,
-                        validation_steps=5, verbose=1)
+if __name__ == '__main__':
+    # GPU limit
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-model_dir = './models'
-model_name = 'model_1.h5'
-weights_path = os.path.join(model_dir, model_name)
-if not os.path.isdir(model_dir):
-    os.makedirs(model_dir)
+    start = time.time()
+    h = model.fit_generator(generator=train_generator, steps_per_epoch=steps_per_epoch, epochs=epochs,
+                            validation_data=test_generator,
+                            validation_steps=validation_steps, verbose=2)
 
-model.save(weights_path)
-end = time.time()
-time_spend = end - start
-print('@ Overall time spend is %.2f seconds.' % time_spend)
+    model_dir = './models'
+    model_name = 'model_1.h5'
+    weights_path = os.path.join(model_dir, model_name)
+    if not os.path.isdir(model_dir):
+        os.makedirs(model_dir)
 
-# plot figures of accuracy and loss of every epoch and a visible test result
-plot_acc_loss(h, epochs)
+    model.save(weights_path)
+    end = time.time()
+    time_spend = end - start
+    print('@ Overall time spend is %.2f seconds.' % time_spend)
+
+    # plot figures of accuracy and loss of every epoch and a visible test result
+    plot_acc_loss(h, epochs)
