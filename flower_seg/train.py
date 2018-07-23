@@ -14,6 +14,20 @@ from keras.models import load_model
 from flower_seg import fcn_models
 from flower_seg.visualization_util import plot_acc_loss
 
+from keras import backend as K
+
+
+def dice_coef(y_true, y_pred, smooth=1):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+
+
+def dice_coef_loss(y_true, y_pred):
+    return 1 - dice_coef(y_true, y_pred)
+
+
 # pre-settings
 # Define training directories (raw training images and their corresponding masks)
 train_image_dir = "../data_set/input/train_flower/"
@@ -33,11 +47,17 @@ cont_training = True
 
 # load model
 if cont_training:
-    model_path = "../flower_1"
-    model = load_model(model_path)
-    print("load pre-trained model")
+    try:
+        model_path = "../flower_1"
+        model = load_model(model_path)
+        print("load pre-trained model")
+    except:
+        model = fcn_models.get_unet_128(input_shape=input_shape, learning_rate=learning_rate, loss_func=dice_coef_loss,
+                                        metrics=[dice_coef])
+        print("Pre-trained model not found, initialized a new model!")
 else:
-    model = fcn_models.get_unet_128(input_shape=input_shape, learning_rate=learning_rate)
+    model = fcn_models.get_unet_128(input_shape=input_shape, learning_rate=learning_rate, loss_func=dice_coef_loss,
+                                    metrics=[dice_coef])
     print("new model ready!")
 
 target_size = (input_shape[0], input_shape[1])
