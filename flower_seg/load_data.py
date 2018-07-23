@@ -24,6 +24,7 @@ def seg2mask(segmentation_dir, mask_save_dir):
         seg_array = io.imread(seg_path, as_gray=True)
 
         # the pixel value of the background in the gray image is 0.07181725490196078
+        # Can use skimage.color.rgb2gray()
         seg_array[seg_array > 0.15] = 1
         io.imsave(fname=os.path.join(mask_save_dir, "mask_{}".format(count)), arr=seg_array)
 

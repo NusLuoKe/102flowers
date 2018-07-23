@@ -4,17 +4,18 @@
 # @File    : train.py
 # @Author  : NUS_LuoKe
 
+import math
 import os
 import random
 import time
 
-from keras.preprocessing.image import ImageDataGenerator
+from keras import backend as K
+from keras.callbacks import EarlyStopping
 from keras.models import load_model
+from keras.preprocessing.image import ImageDataGenerator
 
 from flower_seg import fcn_models
 from flower_seg.visualization_util import plot_acc_loss
-
-from keras import backend as K
 
 
 def dice_coef(y_true, y_pred, smooth=1):
@@ -37,11 +38,12 @@ train_mask_dir = "../data_set/input/train_mask/"
 test_image_dir = "../data_set/input/test_flower/"
 test_mask_dir = "../data_set/input/test_mask/"
 
+early_stopping_patience = 10
 input_shape = (256, 256, 1)
 batch_size = 32
 epochs = 100
-validation_steps = 5
-steps_per_epoch = 2000
+validation_steps = 20
+steps_per_epoch = math.ceil(7500 / batch_size)
 learning_rate = 1e-3
 cont_training = True
 
@@ -123,9 +125,11 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
     start = time.time()
+
+    early_stopping_monitor = EarlyStopping(patience=early_stopping_patience)
     h = model.fit_generator(generator=train_generator, steps_per_epoch=steps_per_epoch, epochs=epochs,
-                            validation_data=test_generator,
-                            validation_steps=validation_steps, verbose=2)
+                            validation_data=test_generator, validation_steps=validation_steps, verbose=1,
+                            callbacks=[early_stopping_monitor])
 
     model_dir = './models'
     model_name = 'model_1.h5'
@@ -138,5 +142,5 @@ if __name__ == '__main__':
     time_spend = end - start
     print('@ Overall time spend is %.2f seconds.' % time_spend)
 
-    # plot figures of accuracy and loss of every epoch and a visible test result
-    plot_acc_loss(h, epochs)
+    # # plot figures of accuracy and loss of every epoch and a visible test result
+    # plot_acc_loss(h, epochs)
