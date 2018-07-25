@@ -68,9 +68,11 @@ dice on the validation set is about 0.79.
 layer. It has a little improvement compare to the Unet_128, but the final dice is also not very high. It is about 0.81 on the validation set.
   
 I test the Unet_128_bn model on some fresh input images. The input image should be gray image which has a shape 
-as (256, 256, 1). Results are as follows.      
+as (256, 256, 1). Results are as follows. For each group, there are three images in order, the original image, 
+the cropped grayscale image and grayscale image corresponding segmentation.
+     
 ### test image 1
-![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1.jpg)
+![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1.jpg)  
 ![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1_gray.png)
 ![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1_pred.png)  
 
