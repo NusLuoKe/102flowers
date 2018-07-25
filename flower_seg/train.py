@@ -18,7 +18,7 @@ from flower_seg import fcn_models
 from flower_seg.visualization_util import plot_acc_loss
 
 
-def dice_coef(y_true, y_pred, smooth=1):
+def dice_coef(y_true, y_pred, smooth=1e-3):
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
     intersection = K.sum(y_true_f * y_pred_f)
