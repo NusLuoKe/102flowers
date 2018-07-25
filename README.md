@@ -56,3 +56,25 @@ performance of my devices to do this project.
 ![ori_image](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/resized_mask_00001.jpg)  
 The images and corresponding masks used to train the model are showing above. 
 shape = (400, 400, 3)
+
+---
+## ***Results***
+I have tried three models to do the segmentation. And I applied early stopping as the callback function for all these three cases.  
+  
+* This first model I tied is Unet_128, which does not contain batch normalization. And the dice on the validation set is about 0.78.  
+* Then in my second try, I used Unet_256, which is a deeper model compared to the first one. But the dice did not improve much. The final
+dice on the validation set is about 0.79.
+* The third model is Unet_128_bn, which a add batch normalization layer and a "relu" activation function after each convolutional 
+layer. It has a little improvement compare to the Unet_128, but the final dice is also not very high. It is about 0.81 on the validation set.
+  
+I test the Unet_128_bn model on some fresh input images. Results are as follows.      
+### test image 1
+![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1.jpg)
+![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1_gray.png)
+![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1_pred.png)  
+
+
+### test image 2
+![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_2.jpg)
+![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_2_gray.png)
+![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_2_pred.png)
