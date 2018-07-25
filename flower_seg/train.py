@@ -29,7 +29,9 @@ def dice_coef_loss(y_true, y_pred):
     return 1 - dice_coef(y_true, y_pred)
 
 
-# pre-settings
+# GPU limit
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
 # Define training directories (raw training images and their corresponding masks)
 train_image_dir = "../data_set/input/train_flower/"
 train_mask_dir = "../data_set/input/train_mask/"
@@ -44,7 +46,7 @@ batch_size = 32
 epochs = 100
 validation_steps = 20
 steps_per_epoch = math.ceil(7500 / batch_size)
-learning_rate = 1e-3
+learning_rate = 1e-4
 cont_training = True
 
 # load model
@@ -121,9 +123,6 @@ test_mask_generator = test_mask_datagen.flow_from_directory(
 test_generator = zip(test_image_generator, test_mask_generator)
 
 if __name__ == '__main__':
-    # GPU limit
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
     start = time.time()
 
     early_stopping_monitor = EarlyStopping(patience=early_stopping_patience)
