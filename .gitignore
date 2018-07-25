@@ -2,5 +2,5 @@
 /segmentation/
 /.idea/
 /data_set/
-/flower_seg/_pycache_
+/flower_seg/__pycache__
 
