@@ -42,25 +42,29 @@ The only thing need to do is to put images in a subdirectory of these directorie
 
 
 ## ***Data Illustrates***  
-![ori_image](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/image_00001.jpg)
-![ori_image](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/mask_00001.jpg)  
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/image_00001.jpg" style="zoom:50%" />           
+
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/mask_00001.jpg" style="zoom:50%" />
+
 Above two images are the original image and it's corresponding mask in the data set.
 
-  
-* It is worth mention that I resized all the training image and there masks into 64*64 when training, which is 
-relatively small compare to the original images. This is because the aspect ratio of many images is not 1 : 1 and it is better to resize all the 
-images into a particular size although we are using a FCN which can accept all size of images. It is also due the limited 
-performance of my devices to do this project.  
 
-![ori_image](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/resized_flower_00001.jpg)
-![ori_image](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/resized_mask_00001.jpg)  
+* It is worth mention that I resized all the training image and there masks into 64*64 when training, which is 
+  relatively small compare to the original images. This is because the aspect ratio of many images is not 1 : 1 and it is better to resize all the 
+  images into a particular size although we are using a FCN which can accept all size of images. It is also due the limited 
+  performance of my devices to do this project.    
+
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/resized_flower_00001.jpg" style="zoom:50%" />
+
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/resized_mask_00001.jpg" style="zoom:50%" />
+
 The images and corresponding masks used to train the model are showing above. 
 shape = (400, 400, 3)
 
 ---
 ## ***Results***
 I have tried three models to do the segmentation. And I applied early stopping as the callback function for all these three cases.  
-  
+
 * This first model I tied is Unet_128, which does not contain batch normalization. And the dice on the validation set is about 0.78.  
 * Then in my second try, I used Unet_256, which is a deeper model compared to the first one. But the dice did not improve much. The final
 dice on the validation set is about 0.79.
@@ -72,12 +76,16 @@ as (256, 256, 1). Results are as follows. For each group, there are three images
 the cropped grayscale image and grayscale image corresponding segmentation.
      
 ### test image 1
-![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1.jpg)  
-![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1_gray.png)
-![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1_pred.png)  
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1.jpg" style="zoom:50%" />
 
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1_gray.png" style="zoom:50%" />
+
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_1_pred.png" style="zoom:50%" />
 
 ### test image 2
-![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_2.jpg)
-![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_2_gray.png)
-![](https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_2_pred.png)
+
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_2.jpg" style="zoom:50%" />
+
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_2_gray.png" style="zoom:50%" />
+
+<img src="https://github.com/NusLuoKe/102flowers/blob/master/readme_img/test_flower_2_pred.png" style="zoom:50%" />
